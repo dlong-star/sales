@@ -255,7 +255,7 @@ def slide3(prs):
     slide_num(sl, 3)
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SLIDE 4 – Snail-Mail Proof  (expanded with Tiny Post + Gen Z revival data)
+# SLIDE 4 – Snail-Mail Proof  (named creators + community orgs)
 # ─────────────────────────────────────────────────────────────────────────────
 def slide4(prs):
     sl = blank_slide(prs)
@@ -264,69 +264,83 @@ def slide4(prs):
 
     txt(sl, "MARKET PROOF", Inches(0.5), Inches(0.55), Inches(9.0), Inches(0.4),
         size=11, bold=True, color=TEAL)
-    txt(sl, "The mail revival is already happening.", Inches(0.5), Inches(0.95),
-        Inches(10.0), Inches(0.75), size=38, bold=True, color=WHITE)
-    box(sl, Inches(0.5), Inches(1.68), Inches(5.5), Inches(0.05), TEAL)
+    txt(sl, "The mail revival is already a business.", Inches(0.5), Inches(0.92),
+        Inches(10.5), Inches(0.72), size=38, bold=True, color=WHITE)
+    box(sl, Inches(0.5), Inches(1.62), Inches(6.5), Inches(0.05), TEAL)
 
-    # ── Top highlight strip: 3 big Gen Z / market numbers ──────────────────
+    # ── Top stat strip ──────────────────────────────────────────────────────
     highlights = [
-        ("150K+", "TikTok posts\ntagged #snailmail"),
-        ("63%",   "of Gen Z actively\ndisconnecting digitally"),
-        ("$45K",  "revenue/mo — one\nsnail mail club, zero paid ads"),
+        ("84%",    "of Americans now\nincorporating analog\nlifestyle choices"),
+        ("150K+",  "TikTok posts\ntagged #snailmail"),
+        ("~50%",   "of Gen Z mails\nsomething monthly\n(Stamps.com)"),
+        ("63%",    "of Gen Z intentionally\ncutting screen time\n(Talker Research)"),
     ]
+    hw = Inches(3.05)
     for i, (big, label) in enumerate(highlights):
-        bx = Inches(0.5 + i * 4.25)
-        rounded_box(sl, bx, Inches(1.82), Inches(4.0), Inches(1.18), TEAL_DIM)
-        txt(sl, big, bx + Inches(0.18), Inches(1.9), Inches(1.6), Inches(0.72),
-            size=36, bold=True, color=TEAL)
-        txt(sl, label, bx + Inches(1.85), Inches(1.96), Inches(2.0), Inches(0.9),
-            size=12, color=OFFWHITE)
-
-    # ── 6-card proof grid  (3 cols × 2 rows) ──────────────────────────────
-    cards = [
-        # icon, big_num, unit_line, org_name, detail
-        ("✉️", "5,000", "paying subscribers", "The Tiny Post",
-         "$45K/mo · zero paid ads\nGen Z creator, Austin TX"),
-        ("📮", "806K+", "members worldwide", "Postcrossing",
-         "87M+ postcards exchanged\nworldwide since 2005"),
-        ("💌", "1M+", "letters delivered", "Letters Against Isolation",
-         "Launched during COVID\ncomplete strangers writing"),
-        ("🤝", "1M+", "letters sent", "Love For Our Elders",
-         "100+ chapters · 70+\nmailboxes globally"),
-        ("🌍", "All 50", "states + 70+ countries", "More Love Letters",
-         "Active in every US state\nencouragement at scale"),
-        ("📖", "1,600", "members in weeks", "Analog Life Snail Society",
-         "Grew from 25 to 1,600\nmembers in one month"),
-    ]
-
-    cw = Inches(4.1)
-    ch = Inches(1.55)
-    col_gap = Inches(0.18)
-    row_gap = Inches(0.14)
-
-    for i, (icon, big, unit, org, detail) in enumerate(cards):
-        col = i % 3
-        row = i // 3
-        bx = Inches(0.5) + col * (cw + col_gap)
-        by = Inches(3.2) + row * (ch + row_gap)
-        rounded_box(sl, bx, by, cw, ch, RGBColor(0x10,0x32,0x32))
-        # accent left bar
-        box(sl, bx, by, Inches(0.05), ch, TEAL if row == 0 else TEAL_DIM)
-        txt(sl, icon, bx + Inches(0.12), by + Inches(0.1), Inches(0.65), Inches(0.7),
-            size=28)
-        txt(sl, big, bx + Inches(0.85), by + Inches(0.08), Inches(1.45), Inches(0.58),
+        bx = Inches(0.5) + i * (hw + Inches(0.12))
+        rounded_box(sl, bx, Inches(1.75), hw, Inches(1.3), RGBColor(0x10,0x32,0x32))
+        box(sl, bx, Inches(1.75), hw, Inches(0.05), TEAL)
+        txt(sl, big, bx + Inches(0.15), Inches(1.84), Inches(1.2), Inches(0.65),
             size=30, bold=True, color=TEAL)
-        txt(sl, unit, bx + Inches(0.85), by + Inches(0.62), Inches(1.6), Inches(0.3),
-            size=10, color=TEAL_LITE)
-        txt(sl, org, bx + Inches(2.35), by + Inches(0.08), Inches(1.65), Inches(0.38),
-            size=12, bold=True, color=WHITE)
-        txt(sl, detail, bx + Inches(2.35), by + Inches(0.48), Inches(1.65), Inches(0.95),
+        txt(sl, label, bx + Inches(1.35), Inches(1.82), Inches(1.6), Inches(1.1),
+            size=10, color=OFFWHITE)
+
+    # ── Section label ───────────────────────────────────────────────────────
+    txt(sl, "REAL CREATORS  ·  REAL REVENUE  ·  ZERO PAID ADS",
+        Inches(0.5), Inches(3.12), Inches(8.0), Inches(0.35),
+        size=9, bold=True, color=TEAL)
+
+    # ── Creator cards row (4 across) ───────────────────────────────────────
+    creators = [
+        ("✉️", "$45K/mo", "The Tiny Post",
+         "Hannah Gustafson · Austin TX\n5,000 subs · $11/mo\n0 paid ads, 0 PR"),
+        ("🏛️", "$18,300/mo", "The Architecture Club",
+         "Trinity Shiroma · Orlando FL\n2,700 subs · $8.88/mo\n1,300 subs in first 3 months"),
+        ("🍝", "4,000 subs", "Little Kitchen of Bo",
+         "Bo Natakhin · Toronto\n$20/issue · first drop\ncooking zine via TikTok"),
+        ("🚦", "$14K/mo", "The Cloud Report",
+         "Christine Tyler Hill · Vermont\nCrossing guard → 2,000 subs\n3,600 on waitlist at launch"),
+    ]
+    cw = Inches(3.05)
+    ch = Inches(2.05)
+    for i, (icon, revenue, name, detail) in enumerate(creators):
+        bx = Inches(0.5) + i * (cw + Inches(0.12))
+        by = Inches(3.52)
+        rounded_box(sl, bx, by, cw, ch, RGBColor(0x14,0x3E,0x3E))
+        # teal top bar
+        box(sl, bx, by, cw, Inches(0.05), TEAL)
+        txt(sl, icon, bx + Inches(0.15), by + Inches(0.1), Inches(0.55), Inches(0.55),
+            size=26)
+        txt(sl, revenue, bx + Inches(0.72), by + Inches(0.1), Inches(2.2), Inches(0.55),
+            size=22, bold=True, color=TEAL)
+        txt(sl, name, bx + Inches(0.15), by + Inches(0.65), cw - Inches(0.3), Inches(0.4),
+            size=13, bold=True, color=WHITE)
+        txt(sl, detail, bx + Inches(0.15), by + Inches(1.05), cw - Inches(0.3), Inches(0.88),
             size=10, color=GREY)
 
-    # Footer
-    txt(sl, "✦  Real mail isn't nostalgic — it's powerful. Kids just haven't had it built for them.",
-        Inches(0.5), Inches(7.1), Inches(12.3), Inches(0.32), size=12,
-        color=TEAL_LITE, italic=True)
+    # ── Community orgs row (4 across) ──────────────────────────────────────
+    txt(sl, "COMMUNITY PROOF  ·  PEOPLE ALREADY CHOOSE REAL MAIL",
+        Inches(0.5), Inches(5.65), Inches(10.0), Inches(0.32),
+        size=9, bold=True, color=TEAL)
+
+    orgs = [
+        ("📮", "806K members\n87M+ postcards", "Postcrossing"),
+        ("💌", "1M+ letters\nCOVID-era strangers", "Letters Against Isolation"),
+        ("🤝", "1M+ letters\n100+ chapters, 70+ mailboxes", "Love For Our Elders"),
+        ("🌍", "All 50 states\n70+ countries active", "More Love Letters"),
+    ]
+    ow = Inches(3.05)
+    oh = Inches(1.38)
+    for i, (icon, stat, name) in enumerate(orgs):
+        bx = Inches(0.5) + i * (ow + Inches(0.12))
+        by = Inches(6.0)
+        rounded_box(sl, bx, by, ow, oh, RGBColor(0x0E,0x28,0x28))
+        txt(sl, icon, bx + Inches(0.12), by + Inches(0.15), Inches(0.6), Inches(0.6),
+            size=24)
+        txt(sl, stat, bx + Inches(0.75), by + Inches(0.1), Inches(2.15), Inches(0.72),
+            size=12, bold=True, color=TEAL_LITE)
+        txt(sl, name, bx + Inches(0.75), by + Inches(0.82), Inches(2.2), Inches(0.38),
+            size=10, color=GREY)
 
     slide_num(sl, 4)
 
