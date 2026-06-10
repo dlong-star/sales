@@ -1,0 +1,29 @@
+name: Build Tiny Masterpieces Ad
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [claude/exciting-dijkstra-0d5lca]
+    paths:
+      - "ad_build/**"
+      - ".github/workflows/build-ad.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build commercial with ffmpeg
+        run: bash ad_build/build_ad.sh
+
+      - name: Commit final video to branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add ad_build/out/tiny_masterpieces_ad.mp4
+          git commit -m "Add 37s Tiny Masterpieces commercial (built by CI)"
+          git push
