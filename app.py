@@ -480,7 +480,7 @@ def analyze_transcript(client: openai.OpenAI, transcript: str, context: str = ""
     if context.strip():
         user_content = f"Additional context:\n{context}\n\n{user_content}"
     response = client.chat.completions.create(
-        model="gpt-4.5-preview",
+        model="gpt-4o",
         messages=[
             {"role": "system", "content": ANALYSIS_SYSTEM_PROMPT},
             {"role": "user", "content": user_content},
