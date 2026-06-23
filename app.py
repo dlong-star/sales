@@ -486,7 +486,8 @@ def analyze_transcript(client: openai.OpenAI, transcript: str, context: str = ""
             {"role": "user", "content": user_content},
         ],
         temperature=0.2,
-        max_tokens=4096,
+        max_tokens=16000,
+        response_format={"type": "json_object"},
     )
     raw = response.choices[0].message.content.strip()
     if raw.startswith("```"):
