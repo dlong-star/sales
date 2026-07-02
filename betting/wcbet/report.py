@@ -35,7 +35,8 @@ class MatchReport:
 def render_text(report: MatchReport) -> str:
     lines: list[str] = []
     lines.append("=" * 78)
-    lines.append(f"{report.home_team} vs {report.away_team}  ({report.fixture_id})")
+    lines.append(f"DAVE AND NUBS SOCCER RETIREMENT PLAN -- {report.home_team} vs {report.away_team}"
+                 f"  ({report.fixture_id})")
     lines.append("=" * 78)
 
     lines.append("\n[1] PREDICTED PROBABILITIES (per model)")
@@ -58,12 +59,13 @@ def render_text(report: MatchReport) -> str:
 
     for market_name, recs in report.markets.items():
         lines.append(f"\n[2-7] MARKET: {market_name.upper()}")
-        header = f"  {'selection':<10}{'model%':>9}{'implied%':>10}{'edge':>8}{'fair odds':>11}" \
+        header = f"  {'selection':<16}{'model%':>9}{'implied%':>10}{'edge':>8}{'fair odds':>11}" \
                  f"{'book odds':>11}{'EV':>8}{'kelly%':>8}{'conf':>7}{'risk':>7}  bet?"
         lines.append(header)
         for rec in recs:
+            tag = " (dog)" if rec.is_underdog else ""
             lines.append(
-                f"  {rec.selection:<10}{rec.model_prob:>9.1%}{rec.implied_prob:>10.1%}{rec.edge:>+8.1%}"
+                f"  {rec.selection + tag:<16}{rec.model_prob:>9.1%}{rec.implied_prob:>10.1%}{rec.edge:>+8.1%}"
                 f"{rec.fair_odds:>11.2f}{rec.decimal_odds:>11.2f}{rec.expected_value:>+8.1%}"
                 f"{rec.kelly_stake_pct:>8.1%}{rec.confidence:>7.0f}{rec.risk:>7.0f}"
                 f"  {'BET' if rec.recommended else 'no'}"

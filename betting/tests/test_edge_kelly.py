@@ -64,6 +64,41 @@ def test_evaluate_market_blocks_on_disagreement_even_with_big_edge():
     assert not rec.model_agreement
 
 
+def test_underdog_gets_bigger_kelly_stake_than_an_equally_qualified_favorite():
+    # Same edge/EV/agreement profile, but the "dog" scenario has a market-implied
+    # probability under the underdog threshold (0.40) while the "favorite"
+    # scenario doesn't -- only that should change the stake size.
+    dog = evaluate_market("1x2", "away", model_prob=0.42, decimal_odds=3.20, implied_prob=0.30,
+                           disagreement=0.0, ci_width=0.0)
+    favorite = evaluate_market("1x2", "home", model_prob=0.60, decimal_odds=1.85, implied_prob=0.50,
+                                disagreement=0.0, ci_width=0.0)
+    assert dog.is_underdog
+    assert not favorite.is_underdog
+    assert dog.recommended and favorite.recommended
+    # underdog policy doubles both the Kelly fraction and the cap
+    assert dog.kelly_stake_pct > favorite.kelly_stake_pct
+
+
+def test_underdog_policy_does_not_bypass_recommendation_gates():
+    # A deep underdog with a real but small edge still must clear confidence/
+    # agreement/min-edge -- underdog status alone must not qualify a bet.
+    rec = evaluate_market("1x2", "away", model_prob=0.32, decimal_odds=3.30, implied_prob=0.30,
+                           disagreement=0.5, ci_width=0.0)
+    assert rec.is_underdog
+    assert not rec.recommended
+
+
+def test_underdog_threshold_is_symmetric_regardless_of_selection_label():
+    # Being classified "underdog" depends only on implied probability, not on
+    # whether the selection happens to be the nominal home/away side.
+    dog_home = evaluate_market("1x2", "home", model_prob=0.45, decimal_odds=3.00, implied_prob=0.33,
+                                disagreement=0.0, ci_width=0.0)
+    dog_away = evaluate_market("1x2", "away", model_prob=0.45, decimal_odds=3.00, implied_prob=0.33,
+                                disagreement=0.0, ci_width=0.0)
+    assert dog_home.is_underdog and dog_away.is_underdog
+    assert dog_home.kelly_stake_pct == pytest.approx(dog_away.kelly_stake_pct)
+
+
 def test_recommendation_never_takes_favorite_or_line_movement_signals():
     """CRITICAL RULE: recommendations must never be a function of which side
     is favored or whether the line moved. Enforce this structurally: the

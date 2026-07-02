@@ -1,4 +1,4 @@
-# wcbet — World Cup Betting Intelligence System
+# Dave and Nubs Soccer Retirement Plan (`wcbet`)
 
 A quantitative framework for estimating *true* match probabilities and
 comparing them against sportsbook-implied probabilities, so that bets are
@@ -132,6 +132,17 @@ A bet is only ever recommended when *all* of the following hold:
 
 All thresholds are named constants at the top of `edge.py` — tune them for
 your own risk tolerance, but don't remove the structural guarantee above.
+
+**Underdog risk policy.** Once (and only once) a selection has already
+cleared every gate above on its own merits, `evaluate_market` sizes it more
+aggressively if the market's de-vigged implied probability is below 40%
+(`UNDERDOG_IMPLIED_PROB_THRESHOLD`): the Kelly fraction doubles (quarter- →
+half-Kelly) and the stake cap doubles (5% → 10% of bankroll). This is a
+deliberate policy to press harder into value the market has under-priced on
+longshots than a sportsbook would ever risk on its own book — it changes
+*how big* an already-qualified underdog bet is, never *whether* one
+qualifies. Underdog status alone still can't manufacture a recommendation
+(see `tests/test_edge_kelly.py::test_underdog_policy_does_not_bypass_recommendation_gates`).
 
 ## Backtesting
 

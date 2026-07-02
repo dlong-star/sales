@@ -21,6 +21,19 @@ DEFAULT_KELLY_FRACTION = 0.25  # quarter-Kelly, for variance control
 DEFAULT_KELLY_CAP = 0.05  # never stake more than 5% of bankroll on one bet
 DEFAULT_MAX_DISAGREEMENT = 0.08  # max allowed stddev across model probabilities to call it "agreement"
 
+# Underdog risk policy: once a selection has already cleared every
+# recommendation gate (edge, EV, confidence, model agreement) on its own
+# merits, size it more aggressively if the market prices it as the
+# longshot. This does NOT relax the recommendation gates above and does NOT
+# let "is an underdog" substitute for a real edge -- it only changes how
+# hard we press a already-qualified underdog bet vs. an already-qualified
+# favorite bet. Vegas books shade lines to protect against longshot bettors'
+# behavioral bias; this policy deliberately takes on more variance than a
+# book would, betting bigger into value the market has under-priced on dogs.
+UNDERDOG_IMPLIED_PROB_THRESHOLD = 0.40  # devigged implied prob below this = "underdog" for this selection
+UNDERDOG_KELLY_FRACTION_MULTIPLIER = 2.0  # quarter-Kelly -> half-Kelly on qualifying underdogs
+UNDERDOG_KELLY_CAP_MULTIPLIER = 2.0  # 5% cap -> 10% cap on qualifying underdogs
+
 
 def edge_pct(model_prob: float, implied_prob: float) -> float:
     return model_prob - implied_prob
@@ -54,12 +67,15 @@ def confidence_score(disagreement: float, ci_width: float) -> float:
     return max(0.0, min(100.0, score))
 
 
-def risk_score(disagreement: float, ci_width: float, kelly_stake: float, data_completeness: float = 1.0) -> float:
+def risk_score(
+    disagreement: float, ci_width: float, kelly_stake: float, data_completeness: float = 1.0,
+    kelly_cap: float = DEFAULT_KELLY_CAP,
+) -> float:
     """0-100 heuristic risk score (higher = riskier)."""
     score = 100.0 * (
         0.40 * min(disagreement * 5.0, 1.0)
         + 0.30 * min(ci_width * 2.0, 1.0)
-        + 0.20 * min(kelly_stake / DEFAULT_KELLY_CAP, 1.0)
+        + 0.20 * min(kelly_stake / kelly_cap, 1.0)
         + 0.10 * (1 - data_completeness)
     )
     return max(0.0, min(100.0, score))
@@ -79,6 +95,7 @@ class BetRecommendation:
     confidence: float
     risk: float
     model_agreement: bool
+    is_underdog: bool
     recommended: bool
     reason: str
 
@@ -98,11 +115,16 @@ def evaluate_market(
     kelly_fraction_: float = DEFAULT_KELLY_FRACTION,
     kelly_cap: float = DEFAULT_KELLY_CAP,
 ) -> BetRecommendation:
+    is_underdog = implied_prob < UNDERDOG_IMPLIED_PROB_THRESHOLD
+    if is_underdog:
+        kelly_fraction_ = kelly_fraction_ * UNDERDOG_KELLY_FRACTION_MULTIPLIER
+        kelly_cap = kelly_cap * UNDERDOG_KELLY_CAP_MULTIPLIER
+
     edge = edge_pct(model_prob, implied_prob)
     ev = expected_value(model_prob, decimal_odds)
     conf = confidence_score(disagreement, ci_width)
     kelly = kelly_fraction(model_prob, decimal_odds, kelly_fraction_, kelly_cap)
-    risk = risk_score(disagreement, ci_width, kelly, data_completeness)
+    risk = risk_score(disagreement, ci_width, kelly, data_completeness, kelly_cap)
     fair = fair_odds_from_prob(model_prob)
     agreement = disagreement <= max_disagreement
 
@@ -120,10 +142,12 @@ def evaluate_market(
 
     recommended = len(reasons) == 0
     reason = "Edge, EV, confidence and model agreement all clear threshold" if recommended else "; ".join(reasons)
+    if recommended and is_underdog:
+        reason += f" (underdog risk policy: {kelly_fraction_:.0%}-Kelly, {kelly_cap:.0%} cap)"
 
     return BetRecommendation(
         market=market, selection=selection, model_prob=model_prob, implied_prob=implied_prob,
         edge=edge, decimal_odds=decimal_odds, fair_odds=fair, expected_value=ev,
         kelly_stake_pct=kelly, confidence=conf, risk=risk, model_agreement=agreement,
-        recommended=recommended, reason=reason,
+        is_underdog=is_underdog, recommended=recommended, reason=reason,
     )

@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import argparse
 
+from wcbet import BRAND_NAME
 from wcbet.backtest.engine import backtest
 from wcbet.data.sample_history import SAMPLE_HISTORY
 from wcbet.data.sources import SampleDataSource
@@ -18,6 +19,7 @@ def cmd_analyze(args: argparse.Namespace) -> None:
     source = SampleDataSource()
     fixture_ids = [args.fixture] if args.fixture else source.list_fixtures()
 
+    print(f"{BRAND_NAME}\n")
     for fid in fixture_ids:
         fixture = source.get_fixture(fid)
         home = source.get_team(fixture.home_team)
@@ -29,7 +31,7 @@ def cmd_analyze(args: argparse.Namespace) -> None:
 
 def cmd_backtest(args: argparse.Namespace) -> None:
     result = backtest(SAMPLE_HISTORY, staking=args.staking, min_edge=args.min_edge)
-    print("BACKTEST RESULT (sample dataset -- see wcbet/data/sample_history.py caveats)")
+    print(f"{BRAND_NAME} -- BACKTEST RESULT (sample dataset -- see wcbet/data/sample_history.py caveats)")
     print("=" * 78)
     print(f"  Bets placed:       {result.n_bets}")
     print(f"  ROI per bet:       {result.roi:+.2%}")
@@ -41,7 +43,7 @@ def cmd_backtest(args: argparse.Namespace) -> None:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(prog="wcbet", description="World Cup betting intelligence system")
+    parser = argparse.ArgumentParser(prog="wcbet", description=f"{BRAND_NAME} -- betting intelligence system")
     sub = parser.add_subparsers(dest="command", required=True)
 
     p_analyze = sub.add_parser("analyze", help="Run the full model pipeline on sample fixtures")
